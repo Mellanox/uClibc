@@ -106,7 +106,7 @@ struct __sched_param
 #if defined _SCHED_H && !defined __cpu_set_t_defined
 # define __cpu_set_t_defined
 /* Size definition for CPU sets.  */
-# define __CPU_SETSIZE	1024
+# define __CPU_SETSIZE	4096
 # define __NCPUBITS	(8 * sizeof (__cpu_mask))
 # include <stdlib.h>
 
