@@ -11,13 +11,12 @@
    too much into it.  Don't use it for anything other than GDB unless
    you know what you are doing.  */
 
-
-/* Actually apps like strace also expect a struct user, so it's better to
- * have a dummy implementation
- */
+#define ARC_MAX_HBP_SLOTS 8
 
 struct user {
-	int dummy;
+	unsigned long int	u_dr_value [ARC_MAX_HBP_SLOTS];
+	unsigned long int	u_dr_control [ARC_MAX_HBP_SLOTS];
+	unsigned long int	u_dr_mask [ARC_MAX_HBP_SLOTS];
 };
 
 #endif  /* sys/user.h */
