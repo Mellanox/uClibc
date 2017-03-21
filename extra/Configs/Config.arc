@@ -36,6 +36,13 @@ config CONFIG_ARC_HAS_ATOMICS
 	  Otherwise libc needs kernel assisted atomic cmpxchg available
 	  since v4.9 kernel
 
+config CONFIG_NPS_HAS_ATOMICS
+	bool "Support atomic cmpxchng instead of llock"
+	default y
+	help
+	  use compare exchange atomic instruction instead of 
+	  LLOCK/SCOND instructions.
+
 choice
 	prompt "MMU Page Size"
 	default CONFIG_ARC_PAGE_SIZE_8K

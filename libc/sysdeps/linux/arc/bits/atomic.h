@@ -41,8 +41,8 @@ void __arc_link_error (void);
 #define __arch_compare_and_exchange_val_64_acq(mem, newval, oldval)	\
   ({ __arc_link_error (); oldval; })
 
-#ifdef __CONFIG_ARC_HAS_ATOMICS__
-
+#ifndef __CONFIG_NPS_HAS_ATOMICS__
+#ifdef __CONFIG_ARC_HAS_ATOMICS__      
 #define __arch_compare_and_exchange_val_32_acq(mem, newval, oldval)     \
   ({									\
 	__typeof(oldval) prev;						\
@@ -91,7 +91,28 @@ void __arc_link_error (void);
   })
 
 #endif
+#else	/* __CONFIG_NPS_HAS_ATOMICS__ */
+#define CTOP_INST_EXC_DI_R2_R2_R3		0x4A664C01
+#define CTOP_AUX_BASE				0xFFFFF800
+#define CTOP_AUX_GPA1				(CTOP_AUX_BASE + 0x08C)
 
+#define __arch_compare_and_exchange_val_32_acq(mem, newval, oldval)     \
+  ({											\
+	unsigned long _newval = newval; 			\
+	__builtin_arc_sr(oldval, CTOP_AUX_GPA1); 	\
+												\
+	__asm__ __volatile__(						\
+	"	mov r2, %0\n"							\
+	"	mov r3, %1\n"							\
+	"	.word %2\n"								\
+	"	mov %0, r2"								\
+	: "+r"(_newval)								\
+	: "r"(mem), "i"(CTOP_INST_EXC_DI_R2_R2_R3)	\
+	: "r2", "r3", "memory");					\
+												\
+	_newval;									\
+  })
+#endif /* __CONFIG_NPS_HAS_ATOMICS__ */
 /* Store NEWVALUE in *MEM and return the old value.
    Atomic EX is present in all configurations
  */
